@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#########################################################################################
 # Aliases
 
 alias ll='ls -alF'
@@ -54,6 +53,11 @@ set -o vi
 
 # Set the path
 export LANG=en_US.UTF-8
+
+ssh-rc() {
+    scp ~/.bashrc $1:/tmp/.bashrc_temp
+    ssh -t $1 "bash --rcfile /tmp/.bashrc_temp ; rm /tmp/.bashrc_temp"
+}
 
 __powerline() {
 
