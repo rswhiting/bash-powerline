@@ -38,6 +38,7 @@ __powerline() {
     readonly FG_BLUE="\[$(tput setaf 4)\]"
     readonly FG_CYAN="\[$(tput setaf 6)\]"
     readonly FG_GREEN="\[$(tput setaf 2)\]"
+    readonly FG_WHITE="\[$(tput setaf 15)\]"
 
     readonly BG_YELLOW="\[$(tput setab 3)\]"
     readonly BG_ORANGE="\[$(tput setab 9)\]"
@@ -93,14 +94,18 @@ __powerline() {
         # Check the exit code of the previous command and display different
         # colors in the prompt accordingly. 
         if [ $? -eq 0 ]; then
-            local BG_EXIT="$BG_GREEN"
+            local PROMPT_EXIT="$FG_WHITE"
         else
-            local BG_EXIT="$BG_RED"
+            local PROMPT_EXIT="$FG_RED"
         fi
 
-        PS1="$BG_BASE1$FG_BASE3 \w $RESET"
-        PS1+="$BG_BLUE$FG_BASE3$(__git_info)$RESET"
-        PS1+="$BG_EXIT$FG_BASE3 $PS_SYMBOL $RESET "
+        PS1="$BG_BLUE$FG_WHITE$BOLD \u$RESET" # user
+        PS1+="$BG_BLUE$FG_WHITE@\h $RESET" # host
+        PS1+="$BG_BASE1$FG_WHITE \t $RESET" # time
+        PS1+="$BG_BASE1$FG_WHITE \w $RESET" # directory
+        PS1+="$BG_GREEN$FG_WHITE$BOLD$(__git_info)$RESET" # git section
+        #PS1+="$BG_GREEN$FG_WHITE$BOLD$(__svn_info)$RESET" # svn section
+        PS1+="\n$PROMPT_EXIT$BOLD$PS_SYMBOL$RESET " # prompt/error
     }
 
     PROMPT_COMMAND=ps1
