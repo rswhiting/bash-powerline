@@ -6,10 +6,10 @@ __powerline() {
     readonly PS_SYMBOL_DARWIN=''
     readonly PS_SYMBOL_LINUX='$'
     readonly PS_SYMBOL_OTHER='%'
-    readonly GIT_BRANCH_SYMBOL='⑂ '
-    readonly GIT_BRANCH_CHANGED_SYMBOL='+'
-    readonly GIT_NEED_PUSH_SYMBOL='⇡'
-    readonly GIT_NEED_PULL_SYMBOL='⇣'
+    readonly BRANCH_SYMBOL='⑂ '
+    readonly BRANCH_CHANGED_SYMBOL='+'
+    readonly NEED_PUSH_SYMBOL='⇡'
+    readonly NEED_PULL_SYMBOL='⇣'
 
     # Solarized colorscheme
     readonly FG_BASE03="\[$(tput setaf 8)\]"
@@ -77,17 +77,53 @@ __powerline() {
         local marks
 
         # branch is modified?
-        [ -n "$($git_eng status --porcelain)" ] && marks+=" $GIT_BRANCH_CHANGED_SYMBOL"
+        [ -n "$($git_eng status --porcelain)" ] && marks+=" $BRANCH_CHANGED_SYMBOL"
 
         # how many commits local branch is ahead/behind of remote?
         local stat="$($git_eng status --porcelain --branch | grep '^##' | grep -o '\[.\+\]$')"
         local aheadN="$(echo $stat | grep -o 'ahead [[:digit:]]\+' | grep -o '[[:digit:]]\+')"
         local behindN="$(echo $stat | grep -o 'behind [[:digit:]]\+' | grep -o '[[:digit:]]\+')"
-        [ -n "$aheadN" ] && marks+=" $GIT_NEED_PUSH_SYMBOL$aheadN"
-        [ -n "$behindN" ] && marks+=" $GIT_NEED_PULL_SYMBOL$behindN"
+        [ -n "$aheadN" ] && marks+=" $NEED_PUSH_SYMBOL$aheadN"
+        [ -n "$behindN" ] && marks+=" $NEED_PULL_SYMBOL$behindN"
 
         # print the git branch segment without a trailing newline
-        printf " $GIT_BRANCH_SYMBOL$branch$marks "
+        printf " $BRANCH_SYMBOL$branch$marks "
+    }
+
+    __svn_branch() {
+        local url=
+        if [[ -d .svn ]]; then
+            url=`svn info | grep '^URL:'`
+            if [[ $url =~ trunk ]]; then
+                echo trunk
+            elif [[ $url =~ /branches/ ]]; then
+                echo $url | sed -e 's#^.*/branches/\(.*\)$#\1#'
+            elif [[ $url =~ /tags/ ]]; then
+                echo $url | sed -e 's#^.*/tags/\(.*\)$#\1#'
+            fi
+        fi
+    }
+
+    __svn_info() { 
+        [ -x "$(which svn)" ] || return    # svn not found
+
+        # get current branch name or short SHA1 hash for detached head
+        local branch="$(__svn_branch)"
+        [ -n "$branch" ] || return  # git branch not found
+
+        local marks
+
+        # branch is modified?
+        [ -n "$(svn status)" ] && marks+=" $BRANCH_CHANGED_SYMBOL"
+
+        # how many commits local branch is ahead/behind of remote?
+        local aheadN="$(svn status | grep -c '^\S')"
+        local behindN="$(svn status -u | grep -c '^\s')"
+        [ -n "$aheadN" ] && marks+=" $NEED_PUSH_SYMBOL$aheadN"
+        [ -n "$behindN" ] && marks+=" $NEED_PULL_SYMBOL$behindN"
+
+        # print the branch segment without a trailing newline
+        printf " $BRANCH_SYMBOL$branch$marks "
     }
 
     ps1() {
@@ -104,7 +140,7 @@ __powerline() {
         PS1+="$BG_BASE1$FG_WHITE \t $RESET" # time
         PS1+="$BG_BASE1$FG_WHITE \w $RESET" # directory
         PS1+="$BG_GREEN$FG_WHITE$BOLD$(__git_info)$RESET" # git section
-        #PS1+="$BG_GREEN$FG_WHITE$BOLD$(__svn_info)$RESET" # svn section
+        PS1+="$BG_GREEN$FG_WHITE$BOLD$(__svn_info)$RESET" # svn section
         PS1+="\n$PROMPT_EXIT$BOLD$PS_SYMBOL$RESET " # prompt/error
     }
 
