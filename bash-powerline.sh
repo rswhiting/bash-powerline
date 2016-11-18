@@ -1,5 +1,60 @@
 #!/usr/bin/env bash
 
+# Aliases
+
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias cc='cd && clear'
+alias hosts='vim /etc/hosts'
+
+
+# don't put duplicate lines or lines starting with space in the history.
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color) color_prompt=yes;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+
+# add scripts to path
+if [ -d "$HOME/code/scripts" ] ; then
+      PATH="$HOME/code/scripts:$PATH"
+fi
+if [ -d "$HOME/.local/bin" ] ; then
+      PATH="$HOME/.local/bin:$PATH"
+fi
+
+# Set to VI mode
+set -o vi
+
+# Set the path
+export LANG=en_US.UTF-8
+
 __powerline() {
 
     # Unicode symbols
