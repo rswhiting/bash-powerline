@@ -119,6 +119,7 @@ __powerline() {
         # how many commits local branch is ahead/behind of remote?
         local aheadN="$(svn status | grep -c '^\S')"
         local behindN="$(svn status -u | grep -c '^\s')"
+        local behindN="$(svn log -r BASE:HEAD | egrep -c '^r[[:digit:]]+ \|')"
         [ -n "$aheadN" ] && marks+=" $NEED_PUSH_SYMBOL$aheadN"
         [ -n "$behindN" ] && marks+=" $NEED_PULL_SYMBOL$behindN"
 
