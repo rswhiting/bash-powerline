@@ -1,3 +1,5 @@
+# github.com/rswhiting/bash-powerline
+
 #########################################################################################
 # Aliases
 
@@ -6,7 +8,6 @@ alias la='ls -A'
 alias l='ls -CF'
 alias cc='cd && clear'
 alias hosts='vim /etc/hosts'
-
 
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
@@ -55,9 +56,11 @@ set -o vi
 export LANG=en_US.UTF-8
 
 ssh-rc() {
-    scp ~/.bashrc $1:/tmp/.bashrc_temp
-    ssh -t $1 "bash --rcfile /tmp/.bashrc_temp ; rm /tmp/.bashrc_temp"
+    ssh-copy-id $1
+    scp -q ~/.bashrc $1:/tmp/.bashrc_temp
+    /usr/bin/ssh -t $1 "bash --rcfile /tmp/.bashrc_temp ; rm /tmp/.bashrc_temp"
 }
+alias ssh=ssh-rc
 
 __powerline() {
 
@@ -125,7 +128,7 @@ __powerline() {
             readonly PS_SYMBOL=$PS_SYMBOL_OTHER
     esac
 
-    __git_info() { 
+    __git_info() {
         [ -x "$(which git)" ] || return    # git not found
 
         local git_eng="env LANG=C git"   # force git output in English to make our work easier
@@ -163,7 +166,7 @@ __powerline() {
         fi
     }
 
-    __svn_info() { 
+    __svn_info() {
         [ -x "$(which svn)" ] || return    # svn not found
 
         # get current branch name or short SHA1 hash for detached head
@@ -188,7 +191,7 @@ __powerline() {
 
     ps1() {
         # Check the exit code of the previous command and display different
-        # colors in the prompt accordingly. 
+        # colors in the prompt accordingly.
         if [ $? -eq 0 ]; then
             local PROMPT_EXIT="$FG_WHITE"
         else
