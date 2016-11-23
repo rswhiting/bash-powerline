@@ -56,6 +56,7 @@ set -o vi
 export LANG=en_US.UTF-8
 
 ssh-rc() {
+    ssh-add | /dev/null
     ssh-copy-id $1
     scp -q ~/.bashrc $1:/tmp/.bashrc_temp
     /usr/bin/ssh -t $1 "bash --rcfile /tmp/.bashrc_temp ; rm /tmp/.bashrc_temp"
