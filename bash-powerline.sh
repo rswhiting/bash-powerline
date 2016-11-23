@@ -154,7 +154,7 @@ __powerline() {
     }
 
     __svn_branch() {
-        local url=`svn info | grep '^URL:'`
+        local url=`svn info 2>&1 | grep '^URL:'`
         if [[ $url =~ trunk ]]; then
             echo trunk
         elif [[ $url =~ /branches/ ]]; then
