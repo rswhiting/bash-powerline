@@ -154,16 +154,13 @@ __powerline() {
     }
 
     __svn_branch() {
-        local url=
-        if [[ -d .svn ]]; then
-            url=`svn info | grep '^URL:'`
-            if [[ $url =~ trunk ]]; then
-                echo trunk
-            elif [[ $url =~ /branches/ ]]; then
-                echo $url | sed -e 's#^.*/branches/\(.*\)$#\1#'
-            elif [[ $url =~ /tags/ ]]; then
-                echo $url | sed -e 's#^.*/tags/\(.*\)$#\1#'
-            fi
+        local url=`svn info | grep '^URL:'`
+        if [[ $url =~ trunk ]]; then
+            echo trunk
+        elif [[ $url =~ /branches/ ]]; then
+            echo $url | sed -e 's#^.*/branches/\(.*\)$#\1#'
+        elif [[ $url =~ /tags/ ]]; then
+            echo $url | sed -e 's#^.*/tags/\(.*\)$#\1#'
         fi
     }
 
