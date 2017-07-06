@@ -8,6 +8,7 @@ alias la='ls -A'
 alias l='ls -CF'
 alias cc='cd && clear'
 alias hosts='vim /etc/hosts'
+alias catalina='vim ~/apache-tomcat-8.0.27/bin/catalina.sh'
 
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
