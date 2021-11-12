@@ -1,5 +1,6 @@
 # github.com/rswhiting/bash-powerline
 
+
 #########################################################################################
 # Aliases
 
@@ -8,7 +9,11 @@ alias la='ls -A'
 alias l='ls -CF'
 alias cc='cd && clear'
 alias hosts='vim /etc/hosts'
-alias catalina='vim ~/apache-tomcat-8.0.27/bin/catalina.sh'
+
+ 
+export PROMPT_COMMAND=enter_directory
+
+#export GREP_OPTIONS="-s --exclude-dir=.svn"
 
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
@@ -60,53 +65,53 @@ ssh-rc() {
     ssh-add > /dev/null 2>&1
     ssh-copy-id $1
     scp -q ~/.bashrc $1:/tmp/.bashrc_temp
-    /usr/bin/ssh -t $1 "bash --rcfile /tmp/.bashrc_temp ; rm /tmp/.bashrc_temp"
+    /usr/bin/ssh -t $1 "bash --rcfile /tmp/.bashrc_temp"
 }
-alias ssh=ssh-rc
+#alias ssh=ssh-rc
 
 __powerline() {
 
     # Unicode symbols
-    readonly PS_SYMBOL_DARWIN=''       ; readonly PS_SYMBOL_LINUX='$'
-    readonly PS_SYMBOL_OTHER='%'        ; readonly BRANCH_SYMBOL='⑂ '
-    readonly BRANCH_CHANGED_SYMBOL='+'  ; readonly NEED_PUSH_SYMBOL='⇡'
-    readonly NEED_PULL_SYMBOL='⇣'
+    PS_SYMBOL_DARWIN=''       ; PS_SYMBOL_LINUX='$'
+    PS_SYMBOL_OTHER='%'        ; BRANCH_SYMBOL='⑂ '
+    BRANCH_CHANGED_SYMBOL='+'  ; NEED_PUSH_SYMBOL='⇡'
+    NEED_PULL_SYMBOL='⇣'
 
     # Solarized colorscheme
-    readonly FG_BASE03="\[$(tput setaf 8)\]"    ; readonly FG_BASE02="\[$(tput setaf 0)\]"
-    readonly FG_BASE01="\[$(tput setaf 10)\]"   ; readonly FG_BASE00="\[$(tput setaf 11)\]"
-    readonly FG_BASE0="\[$(tput setaf 12)\]"    ; readonly FG_BASE1="\[$(tput setaf 14)\]"
-    readonly FG_BASE2="\[$(tput setaf 7)\]"     ; readonly FG_BASE3="\[$(tput setaf 15)\]"
+    FG_BASE03="\[$(tput setaf 8)\]"    ; FG_BASE02="\[$(tput setaf 0)\]"
+    FG_BASE01="\[$(tput setaf 10)\]"   ; FG_BASE00="\[$(tput setaf 11)\]"
+    FG_BASE0="\[$(tput setaf 12)\]"    ; FG_BASE1="\[$(tput setaf 14)\]"
+    FG_BASE2="\[$(tput setaf 7)\]"     ; FG_BASE3="\[$(tput setaf 15)\]"
 
-    readonly BG_BASE03="\[$(tput setab 8)\]"    ; readonly BG_BASE02="\[$(tput setab 0)\]"
-    readonly BG_BASE01="\[$(tput setab 10)\]"   ; readonly BG_BASE00="\[$(tput setab 11)\]"
-    readonly BG_BASE0="\[$(tput setab 12)\]"    ; readonly BG_BASE1="\[$(tput setab 14)\]"
-    readonly BG_BASE2="\[$(tput setab 7)\]"     ; readonly BG_BASE3="\[$(tput setab 15)\]"
+    BG_BASE03="\[$(tput setab 8)\]"    ; BG_BASE02="\[$(tput setab 0)\]"
+    BG_BASE01="\[$(tput setab 10)\]"   ; BG_BASE00="\[$(tput setab 11)\]"
+    BG_BASE0="\[$(tput setab 12)\]"    ; BG_BASE1="\[$(tput setab 14)\]"
+    BG_BASE2="\[$(tput setab 7)\]"     ; BG_BASE3="\[$(tput setab 15)\]"
 
-    readonly FG_YELLOW="\[$(tput setaf 3)\]"    ; readonly FG_ORANGE="\[$(tput setaf 9)\]"
-    readonly FG_RED="\[$(tput setaf 1)\]"       ; readonly FG_MAGENTA="\[$(tput setaf 5)\]"
-    readonly FG_VIOLET="\[$(tput setaf 13)\]"   ; readonly FG_BLUE="\[$(tput setaf 4)\]"
-    readonly FG_CYAN="\[$(tput setaf 6)\]"      ; readonly FG_GREEN="\[$(tput setaf 2)\]"
-    readonly FG_WHITE="\[$(tput setaf 15)\]"
+    FG_YELLOW="\[$(tput setaf 3)\]"    ; FG_ORANGE="\[$(tput setaf 9)\]"
+    FG_RED="\[$(tput setaf 1)\]"       ; FG_MAGENTA="\[$(tput setaf 5)\]"
+    FG_VIOLET="\[$(tput setaf 13)\]"   ; FG_BLUE="\[$(tput setaf 4)\]"
+    FG_CYAN="\[$(tput setaf 6)\]"      ; FG_GREEN="\[$(tput setaf 2)\]"
+    FG_WHITE="\[$(tput setaf 15)\]"
 
-    readonly BG_YELLOW="\[$(tput setab 3)\]"    ; readonly BG_ORANGE="\[$(tput setab 9)\]"
-    readonly BG_RED="\[$(tput setab 1)\]"       ; readonly BG_MAGENTA="\[$(tput setab 5)\]"
-    readonly BG_VIOLET="\[$(tput setab 13)\]"   ; readonly BG_BLUE="\[$(tput setab 4)\]"
-    readonly BG_CYAN="\[$(tput setab 6)\]"      ; readonly BG_GREEN="\[$(tput setab 2)\]"
+    BG_YELLOW="\[$(tput setab 3)\]"    ; BG_ORANGE="\[$(tput setab 9)\]"
+    BG_RED="\[$(tput setab 1)\]"       ; BG_MAGENTA="\[$(tput setab 5)\]"
+    BG_VIOLET="\[$(tput setab 13)\]"   ; BG_BLUE="\[$(tput setab 4)\]"
+    BG_CYAN="\[$(tput setab 6)\]"      ; BG_GREEN="\[$(tput setab 2)\]"
 
-    readonly DIM="\[$(tput dim)\]"              ; readonly REVERSE="\[$(tput rev)\]"
-    readonly RESET="\[$(tput sgr0)\]"           ; readonly BOLD="\[$(tput bold)\]"
+    DIM="\[$(tput dim)\]"              ; REVERSE="\[$(tput rev)\]"
+    RESET="\[$(tput sgr0)\]"           ; BOLD="\[$(tput bold)\]"
 
     # what OS?
     case "$(uname)" in
         Darwin)
-            readonly PS_SYMBOL=$PS_SYMBOL_DARWIN
+            PS_SYMBOL=$PS_SYMBOL_DARWIN
             ;;
         Linux)
-            readonly PS_SYMBOL=$PS_SYMBOL_LINUX
+            PS_SYMBOL=$PS_SYMBOL_LINUX
             ;;
         *)
-            readonly PS_SYMBOL=$PS_SYMBOL_OTHER
+            PS_SYMBOL=$PS_SYMBOL_OTHER
     esac
 
     __git_info() {
@@ -181,7 +186,7 @@ __powerline() {
         PS1+="$BG_BASE1$FG_WHITE \t $RESET" # time
         PS1+="$BG_BASE1$FG_WHITE \w $RESET" # directory
         PS1+="$BG_GREEN$FG_WHITE$BOLD$(__git_info)$RESET" # git section
-        PS1+="$BG_GREEN$FG_WHITE$BOLD$(__svn_info)$RESET" # svn section
+        #PS1+="$BG_GREEN$FG_WHITE$BOLD$(__svn_info)$RESET" # svn section
         PS1+="\n$PROMPT_EXIT$BOLD$PS_SYMBOL$RESET " # prompt/error
     }
 
