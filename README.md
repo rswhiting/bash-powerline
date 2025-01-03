@@ -62,3 +62,12 @@ non-retina screens. I'd rather stick with existing unicode symbols in the fonts.
   Powerline. 
 * [emacs powerline](https://github.com/milkypostman/powerline): Powerline for
   Emacs
+
+
+## New Box Setup
+```
+sudo apt install bash-completion
+```
+
+
+

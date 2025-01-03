@@ -1,65 +1,67 @@
 # github.com/rswhiting/bash-powerline
 
 
-#########################################################################################
-# Aliases
+source "$(dirname "${BASH_SOURCE[0]}")/bashrc.sh"
 
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-alias cc='cd && clear'
-alias hosts='vim /etc/hosts'
+# Jump Up multiple directories
+# from https://unix.stackexchange.com/questions/14303/bash-cd-up-until-in-certain-folder
+ju ()
+{
+    if [ -z "$1" ]; then
+        return
+    fi
+    local upto=$1
+    cd "${PWD/\/$upto\/*//$upto}"
+}
 
- 
-export PROMPT_COMMAND=enter_directory
+# autocomplete for upto()
+_ju()
+{
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local d=${PWD//\//\ }
+    COMPREPLY=( $( compgen -W "$d" -- "$cur" ) )
+}
+complete -F _ju ju
 
-#export GREP_OPTIONS="-s --exclude-dir=.svn"
+# Jump to a directory down the chain
+jd(){
+    if [ -z "$1" ]; then
+        echo "Usage: jd [directory]"
+        return 1
+    fi
 
-# don't put duplicate lines or lines starting with space in the history.
-HISTCONTROL=ignoreboth
+    local matches=($(compgen -G "**/$1"))
 
-# append to the history file, don't overwrite it
-shopt -s histappend
+    if [ ${#matches[@]} -eq 0 ]; then
+        echo "No matching directories found"
+        return 1
+    elif [ ${#matches[@]} -eq 1 ]; then
+        cd "${matches[0]}"
+    else
+        echo "Multiple matches found:"
+        select dir in "${matches[@]}"; do
+            if [ -n "$dir" ]; then
+                cd "$dir"
+                break
+            else
+                echo "Invalid selection"
+            fi
+        done
+    fi
+}
 
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color) color_prompt=yes;;
-esac
-
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-
-# add scripts to path
-if [ -d "$HOME/code/scripts" ] ; then
-      PATH="$HOME/code/scripts:$PATH"
-fi
-if [ -d "$HOME/.local/bin" ] ; then
-      PATH="$HOME/.local/bin:$PATH"
-fi
-
-# Set to VI mode
-set -o vi
-
-# Set the path
-export LANG=en_US.UTF-8
+# autocomplete for jd()
+_jd()
+{
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local matches=($(find . -type d -name "*$cur*"))
+    local basenames=()
+    for match in "${matches[@]}"; do
+        basenames+=("$(basename "$match")")
+    done
+    COMPREPLY=( $( compgen -W "${basenames[@]}" -- "$cur" ) )
+}
+complete -F _jd jd
 
 ssh-rc() {
     ssh-add > /dev/null 2>&1
@@ -138,40 +140,6 @@ __powerline() {
         printf " $BRANCH_SYMBOL$branch$marks "
     }
 
-    __svn_branch() {
-        local url=`svn info 2>&1 | grep '^URL:'`
-        if [[ $url =~ trunk ]]; then
-            echo trunk
-        elif [[ $url =~ /branches/ ]]; then
-            echo $url | sed -e 's#^.*/branches/\(.*\)$#\1#'
-        elif [[ $url =~ /tags/ ]]; then
-            echo $url | sed -e 's#^.*/tags/\(.*\)$#\1#'
-        fi
-    }
-
-    __svn_info() {
-        [ -x "$(which svn)" ] || return    # svn not found
-
-        # get current branch name or short SHA1 hash for detached head
-        local branch="$(__svn_branch)"
-        [ -n "$branch" ] || return  # git branch not found
-
-        local marks
-
-        # branch is modified?
-        [ -n "$(svn status)" ] && marks+=" $BRANCH_CHANGED_SYMBOL"
-
-        # how many commits local branch is ahead/behind of remote?
-        local aheadN="$(svn status | grep -c '^\S')"
-        local behindN="$(svn status -u | grep -c '^\s')"
-        local behindN="$(svn log -r BASE:HEAD | egrep -c '^r[[:digit:]]+ \|')"
-        [ -n "$aheadN" ] && marks+=" $NEED_PUSH_SYMBOL$aheadN"
-        [ -n "$behindN" ] && marks+=" $NEED_PULL_SYMBOL$behindN"
-
-        # print the branch segment without a trailing newline
-        printf " $BRANCH_SYMBOL$branch$marks "
-    }
-
     ps1() {
         # Check the exit code of the previous command and display different
         # colors in the prompt accordingly.
@@ -181,12 +149,19 @@ __powerline() {
             local PROMPT_EXIT="$FG_RED"
         fi
 
-        PS1="$BG_BLUE$FG_WHITE$BOLD \u$RESET" # user
-        PS1+="$BG_BLUE$FG_WHITE@\h $RESET" # host
-        PS1+="$BG_BASE1$FG_WHITE \t $RESET" # time
-        PS1+="$BG_BASE1$FG_WHITE \w $RESET" # directory
-        PS1+="$BG_GREEN$FG_WHITE$BOLD$(__git_info)$RESET" # git section
-        #PS1+="$BG_GREEN$FG_WHITE$BOLD$(__svn_info)$RESET" # svn section
+        # PS1="$BG_BLUE$FG_WHITE$BOLD \u$RESET" # user
+        # PS1+="$BG_BLUE$FG_WHITE@\h $RESET" # host
+        # PS1+="$BG_BASE1$FG_WHITE \t $RESET" # time
+        # PS1+="$BG_BASE1$FG_WHITE \w $RESET" # directory
+        # PS1+="$BG_GREEN$FG_WHITE$BOLD$(__git_info)$RESET" # git section
+        # PS1+="\n$PROMPT_EXIT$BOLD$PS_SYMBOL$RESET " # prompt/error
+
+        PS1=""
+        PS1+="$BG_BLUE$FG_WHITE \t $RESET" # time
+        # PS1+="$FG_WHITE$BOLD \u$RESET" # user
+        # PS1+="$FG_WHITE@\h $RESET" # host
+        PS1+="$FG_BLUE \w$RESET" # directory
+        PS1+="$FG_GREEN$BOLD$(__git_info)$RESET" # git section
         PS1+="\n$PROMPT_EXIT$BOLD$PS_SYMBOL$RESET " # prompt/error
     }
 
