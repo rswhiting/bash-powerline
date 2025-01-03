@@ -78,6 +78,8 @@ __powerline() {
     PS_SYMBOL_OTHER='%'        ; BRANCH_SYMBOL='⑂ '
     BRANCH_CHANGED_SYMBOL='+'  ; NEED_PUSH_SYMBOL='⇡'
     NEED_PULL_SYMBOL='⇣'
+    PYTHON_VENV_SYMBOL='🐍'
+    
 
     # Solarized colorscheme
     FG_BASE03="\[$(tput setaf 8)\]"    ; FG_BASE02="\[$(tput setaf 0)\]"
@@ -140,6 +142,13 @@ __powerline() {
         printf " $BRANCH_SYMBOL$branch$marks "
     }
 
+    __python_info() {
+        # check if we're in a python virtualenv, if so get the python version
+        if [ -n "$VIRTUAL_ENV" ]; then
+            printf "$PYTHON_VENV_SYMBOL $(python -V 2>&1 | cut -d ' ' -f 2) "
+        fi
+    }
+
     ps1() {
         # Check the exit code of the previous command and display different
         # colors in the prompt accordingly.
@@ -158,10 +167,9 @@ __powerline() {
 
         PS1=""
         PS1+="$BG_BLUE$FG_WHITE \t $RESET" # time
-        # PS1+="$FG_WHITE$BOLD \u$RESET" # user
-        # PS1+="$FG_WHITE@\h $RESET" # host
         PS1+="$FG_BLUE \w$RESET" # directory
         PS1+="$FG_GREEN$BOLD$(__git_info)$RESET" # git section
+        PS1+="$FG_YELLOW$BOLD$(__python_info)$RESET" # python section
         PS1+="\n$PROMPT_EXIT$BOLD$PS_SYMBOL$RESET " # prompt/error
     }
 

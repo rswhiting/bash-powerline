@@ -17,15 +17,14 @@ alias pigdate_today='d0="1971-09-27" && diff=$(( ($(date -u +%s) - $(date -u -d 
 alias sprint_number='echo $(( ($(date +%s)-$(date +%s -d 20210802))/86400/14+169 ))'
 
 
-alias ll='ls -alF'
+alias ll='ls -alhF'
 alias la='ls -A'
-alias l='ls -CF'
-alias cc='cd && clear'
+alias cc='cd && clear && source ~/.bashrc'
 alias hosts='vim /etc/hosts'
 alias ..='cd ..'
 alias ...='cd ..; cd ..'
 alias ....='cd ..; cd ..; cd ..'
-alias sourcerc='source ~/.bashrc'
+alias bashrc='source ~/.bashrc'
 
 export PROMPT_COMMAND=enter_directory
 
