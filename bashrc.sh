@@ -22,8 +22,10 @@ alias la='ls -A'
 alias cc='cd && clear && source ~/.bashrc'
 alias hosts='vim /etc/hosts'
 alias ..='cd ..'
-alias ...='cd ..; cd ..'
-alias ....='cd ..; cd ..; cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias tom="uvx tomlscript"
+alias uvsyncall="find . -maxdepth 3 -name \"pyproject.toml\" -execdir uv sync \;"
 alias bashrc='source ~/.bashrc'
 
 export PROMPT_COMMAND=enter_directory

@@ -144,8 +144,10 @@ __powerline() {
 
     __python_info() {
         # check if we're in a python virtualenv, if so get the python version
-        if [ -n "$VIRTUAL_ENV" ]; then
-            printf "$PYTHON_VENV_SYMBOL $(python -V 2>&1 | cut -d ' ' -f 2) "
+        if [ -n "$POETRY_ACTIVE" ]; then
+            printf "poetry $(python -V 2>&1 | cut -d ' ' -f 2) "
+        elif [ -n "$VIRTUAL_ENV" ]; then
+            printf ".venv $(python -V 2>&1 | cut -d ' ' -f 2) "
         fi
     }
 
@@ -165,7 +167,7 @@ __powerline() {
         # PS1+="$BG_GREEN$FG_WHITE$BOLD$(__git_info)$RESET" # git section
         # PS1+="\n$PROMPT_EXIT$BOLD$PS_SYMBOL$RESET " # prompt/error
 
-        PS1=""
+        PS1="\n"
         PS1+="$BG_BLUE$FG_WHITE \t $RESET" # time
         PS1+="$FG_BLUE \w$RESET" # directory
         PS1+="$FG_GREEN$BOLD$(__git_info)$RESET" # git section
