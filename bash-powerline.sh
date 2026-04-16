@@ -178,6 +178,39 @@ __powerline() {
     PROMPT_COMMAND=ps1
 }
 
+wt() {
+  local name="$1"
+  if [ -z "$name" ]; then
+    echo "usage: wt <branch-name>" >&2
+    return 1
+  fi
+  local root="$(git rev-parse --show-toplevel)" || return 1
+  local tree_dir="${root}/../$(basename "$root")-wts/${name}"
+
+  if [ -d "$tree_dir" ]; then
+    cd "$tree_dir"
+    return
+  fi
+
+  if git show-ref --verify --quiet "refs/heads/${name}"; then
+    git worktree add "$tree_dir" "$name" || return 1
+  else
+    git worktree add "$tree_dir" -b "$name" || return 1
+  fi
+
+  cd "$tree_dir"
+  [ -f "$root/.env.local" ] && ln -s "$root/.env.local" .env.local
+#   [ -d "$root/node_modules" ] && ln -s "$root/node_modules" node_modules
+}
+
+wtls() { git worktree list; }
+
+wtrm() {
+  local name="$1"
+  git worktree remove "../$(basename $(git rev-parse --show-toplevel))-wts/$name"
+  git branch -D "$name" 2>/dev/null
+}
+
 # only run powerline for interactive shell
 if [[ $- == *i* ]]; then
     __powerline
